@@ -122,20 +122,6 @@ A video walkthrough showcasing:
 
 ---
 
-## 📬 Submission Info
-
-**Repo Name:** `DevOpsAgent Task – Ishan Pathak`  
-**Submission Email:**  
-To: `santosh.thota@analytos.ai`  
-CC: `sasidharsunkesula579@gmail.com`  
-**Subject:** `DevOps AI Task – Ishan Pathak`  
-**Attachments:**  
-- GitHub Repo Link  
-- Demo Video Recording  
-- Resume
-
----
-
 ## 🙌 Acknowledgements
 
 - Inspired by best practices in DevOps automation and AIOps
