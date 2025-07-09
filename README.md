@@ -1,5 +1,5 @@
 # AI-powered-Multi-Tool-DevOps-Agent
-an AI-powered multi-tool DevOps agent that automates infrastructure monitoring, anomaly detection, root cause analysis, and remediation.
+An AI-powered multi-tool DevOps agent that automates infrastructure monitoring, anomaly detection, root cause analysis, and remediation.
 The agent will handle two main workflows:
 
 1️⃣ CPU Spike Detection & Analysis Agent
