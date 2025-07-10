@@ -367,3 +367,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+variable "node_exporter_version" {
+  description = "Version of Node Exporter to install"
+  type        = string
+  default     = "1.6.1"
+}
