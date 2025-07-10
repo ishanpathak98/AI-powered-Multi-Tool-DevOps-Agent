@@ -367,3 +367,13 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+variable "node_exporter_version" {
+  description = "Version of Node Exporter to install"
+  default     = "1.7.0"
+}
+
+variable "promtail_version" {
+  description = "Version of Promtail to install"
+  default     = "2.9.3"
+}
+
