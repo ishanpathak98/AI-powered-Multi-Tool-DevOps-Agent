@@ -9,7 +9,8 @@ PROMETHEUS_SERVER="${prometheus_server}"
 LOKI_SERVER="${loki_server}"
 CLOUDWATCH_LOG_GROUP="${cloudwatch_log_group}"
 PROJECT_NAME="${project_name}"
-NODE_EXPORTER_VERSION="1.7.0"
+NODE_EXPORTER_VERSION="${node_exporter_version}"
+PROMTAIL_VERSION="${promtail_version}"
 
 # Log function
 log() {
@@ -96,7 +97,6 @@ systemctl start node_exporter
 systemctl enable node_exporter
 
 log "Installing Promtail..."
-PROMTAIL_VERSION="2.9.3"
 cd /tmp
 wget https://github.com/grafana/loki/releases/download/v${PROMTAIL_VERSION}/promtail-linux-amd64.zip
 unzip promtail-linux-amd64.zip
