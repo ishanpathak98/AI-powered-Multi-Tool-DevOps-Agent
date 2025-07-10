@@ -369,11 +369,11 @@ variable "tags" {
 }
 variable "node_exporter_version" {
   description = "Version of Node Exporter to install"
-  default     = "1.7.0"
+  default     = "1.8.1"
 }
 
 variable "promtail_version" {
   description = "Version of Promtail to install"
-  default     = "2.9.3"
+  default     = "2.9.4"
 }
 
