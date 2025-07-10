@@ -203,7 +203,13 @@ variable "python_version" {
 variable "node_exporter_version" {
   description = "Node Exporter version to install"
   type        = string
-  default     = "1.6.1"
+  default     = "1.8.1"
+}
+
+variable "promtail_version" {
+  description = "Promtail version to install"
+  type        = string
+  default     = "2.9.4"
 }
 
 variable "cadvisor_version" {
@@ -367,13 +373,3 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-variable "node_exporter_version" {
-  description = "Version of Node Exporter to install"
-  default     = "1.8.1"
-}
-
-variable "promtail_version" {
-  description = "Version of Promtail to install"
-  default     = "2.9.4"
-}
-
