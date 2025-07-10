@@ -120,8 +120,7 @@ echo "Starting CloudWatch agent..."
 # Install Node Exporter for Prometheus monitoring
 echo "Installing Node Exporter..."
 NODE_EXPORTER_VERSION="${NODE_EXPORTER_VERSION}"
-wget https://github.com/prometheus/node_exporter/releases/download/v$NODE_EXPORTER_VERSION/node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz
-tar xvfz node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz
+wget https://github.com/prometheus/node_exporter/releases/download/v"$NODE_EXPORTER_VERSION"/node_exporter-"$NODE_EXPORTER_VERSION".linux-amd64.tar.gz
 mv node_exporter-$NODE_EXPORTER_VERSION.linux-amd64/node_exporter /usr/local/bin/
 rm -rf node_exporter-$NODE_EXPORTER_VERSION.linux-amd64*
 
