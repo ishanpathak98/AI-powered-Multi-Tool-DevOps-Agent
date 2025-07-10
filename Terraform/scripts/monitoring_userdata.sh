@@ -1,77 +1,98 @@
 #!/bin/bash
-# terraform/scripts/monitoring_userdata.sh
-# User data script for monitoring server with Prometheus, Grafana, and Loki
 
-set -e
+# Variables substituted via Terraform templatefile()
+NODE_EXPORTER_VERSION="${node_exporter_version}"
+PROMTAIL_VERSION="${promtail_version}"
+GRAFANA_ADMIN_PASSWORD="${grafana_password}"
 
-# Variables from Terraform
-GRAFANA_ADMIN_PASSWORD="${grafana_admin_password}"
-CLOUDWATCH_LOG_GROUP="${cloudwatch_log_group}"
-PROJECT_NAME="${project_name}"
-
-# Log function
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a /var/log/user-data.log
-}
-
-log "Starting user data script for monitoring server"
-
-# Update system
-log "Updating system packages..."
+# Update and install dependencies
 apt-get update -y
-apt-get upgrade -y
+apt-get install -y wget unzip curl apt-transport-https software-properties-common gnupg2
 
-# Install essential packages
-log "Installing essential packages..."
-apt-get install -y \
-    curl \
-    wget \
-    git \
-    vim \
-    htop \
-    unzip \
-    jq \
-    software-properties-common \
-    apt-transport-https \
-    ca-certificates \
-    gnupg \
-    lsb-release \
-    awscli \
-    build-essential \
-    python3-dev \
-    python3-pip \
-    python3-venv \
-    supervisor \
-    nginx \
-    certbot \
-    fail2ban \
-    ufw \
-    sqlite3
+# -------------------------------
+# Install Node Exporter
+# -------------------------------
+cd /opt
+wget https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
+tar xvf node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
+cp node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter /usr/local/bin/
+useradd -rs /bin/false node_exporter
 
-# Configure UFW firewall
-log "Configuring UFW firewall..."
-ufw --force enable
-ufw allow ssh
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw allow 3000/tcp  # Grafana
-ufw allow 9090/tcp  # Prometheus
-ufw allow 3100/tcp  # Loki
-ufw allow 9093/tcp  # Alertmanager
+cat <<EOF > /etc/systemd/system/node_exporter.service
+[Unit]
+Description=Node Exporter
+After=network.target
 
-# Install Docker
-log "Installing Docker..."
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+[Service]
+User=node_exporter
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl daemon-reexec
+systemctl daemon-reload
+systemctl enable node_exporter
+systemctl start node_exporter
+
+# -------------------------------
+# Install Promtail
+# -------------------------------
+cd /opt
+wget https://github.com/grafana/loki/releases/download/v${PROMTAIL_VERSION}/promtail-linux-amd64.zip
+unzip promtail-linux-amd64.zip
+chmod a+x promtail-linux-amd64
+mv promtail-linux-amd64 /usr/local/bin/promtail
+
+cat <<EOF > /etc/promtail-config.yaml
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://localhost:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/syslog
+EOF
+
+cat <<EOF > /etc/systemd/system/promtail.service
+[Unit]
+Description=Promtail
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/promtail -config.file=/etc/promtail-config.yaml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable promtail
+systemctl start promtail
+
+# -------------------------------
+# Install Grafana
+# -------------------------------
+wget -q -O - https://packages.grafana.com/gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/grafana.gpg
+add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
 apt-get update -y
-apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+apt-get install -y grafana
 
-# Start and enable Docker
-systemctl start docker
-systemctl enable docker
+systemctl enable grafana-server
+systemctl start grafana-server
 
-# Add ubuntu user to docker group
-usermod -aG docker ubuntu
-
-# Install Docker Compose
-log "Installing Docker Compose..."
+# Set admin password
+grafana-cli admin reset-admin-password "${GRAFANA_ADMIN_PASSWORD}"
