@@ -203,7 +203,7 @@ variable "python_version" {
 variable "node_exporter_version" {
   description = "Node Exporter version to install"
   type        = string
-  default     = "latest"
+  default     = "1.6.1"
 }
 
 variable "cadvisor_version" {
@@ -366,9 +366,4 @@ variable "tags" {
   description = "Additional tags for resources"
   type        = map(string)
   default     = {}
-}
-variable "node_exporter_version" {
-  description = "Version of Node Exporter to install"
-  type        = string
-  default     = "1.6.1"
 }
