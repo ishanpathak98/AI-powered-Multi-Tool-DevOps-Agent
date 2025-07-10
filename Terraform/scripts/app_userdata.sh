@@ -125,4 +125,5 @@ systemctl daemon-reload
 systemctl start node_exporter
 systemctl enable node_exporter
 
-# Remaining setup continues... (unchanged)
+# Add the rest of your setup below as needed (Promtail, CloudWatch agent, app setup, etc.)
+log "Base setup complete. Proceeding with remaining configuration..."
