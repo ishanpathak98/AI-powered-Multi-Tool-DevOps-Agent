@@ -1,0 +1,16 @@
+# === REQUIRED ===
+aws_region         = "ap-south-1"            # Mumbai
+ssh_allowed_cidr   = "YOUR.IP.ADDR.123/32"   # <-- set to your IP/32 (do NOT use 0.0.0.0/0)
+public_key_openssh = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEexamplePublicKeyDataGoesHere user@laptop"
+
+# === OPTIONAL (already set for your project) ===
+project_name     = "AI-powered-Multi-Tool-DevOps-Agent"
+instance_type    = "t2.micro"
+root_volume_size = 16
+enable_ssm       = true
+time_zone        = "Asia/Kolkata"
+
+tags = {
+  Environment = "dev"
+  Owner       = "Ishan"
+}
