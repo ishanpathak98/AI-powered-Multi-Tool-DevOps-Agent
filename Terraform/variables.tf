@@ -1,56 +1,63 @@
-# AWS Settings
 variable "aws_region" {
-  description = "The AWS region to deploy resources"
+  description = "AWS region (e.g., ap-south-1 for Mumbai)."
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
 }
 
 variable "project_name" {
-  description = "Name of the project"
+  description = "Human-friendly project name for tags/labels."
   type        = string
-  default     = "devops-agent"
+  default     = "AI-powered-Multi-Tool-DevOps-Agent"
 }
 
-variable "key_pair_name" {
-  description = "Name of the AWS key pair for SSH access"
-  type        = string
-}
-
-# VPC & Subnets
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
+  description = "CIDR for the VPC."
   type        = string
-  default     = "10.0.0.0/16"
+  default     = "10.10.0.0/16"
 }
 
-variable "public_subnet_cidrs" {
-  description = "List of CIDR blocks for public subnets"
-  type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+variable "public_subnet_cidr" {
+  description = "CIDR for the public subnet."
+  type        = string
+  default     = "10.10.1.0/24"
 }
 
-variable "private_subnet_cidrs" {
-  description = "List of CIDR blocks for private subnets"
-  type        = list(string)
-  default     = ["10.0.3.0/24", "10.0.4.0/24"]
+variable "ssh_allowed_cidr" {
+  description = "Your IP in CIDR (e.g., 1.2.3.4/32) for SSH."
+  type        = string
 }
 
-# Instance Configuration
+variable "public_key_openssh" {
+  description = "Your SSH public key (OpenSSH format)."
+  type        = string
+}
+
 variable "instance_type" {
-  description = "EC2 instance type"
+  description = "EC2 instance type."
   type        = string
   default     = "t2.micro"
 }
 
-# Monitoring Agent Versions
-variable "node_exporter_version" {
-  description = "Version of Prometheus Node Exporter"
-  type        = string
-  default     = "1.7.0"
+variable "root_volume_size" {
+  description = "Root EBS size in GiB."
+  type        = number
+  default     = 16
 }
 
-variable "promtail_version" {
-  description = "Version of Promtail agent"
+variable "enable_ssm" {
+  description = "Attach SSM instance profile for Session Manager."
+  type        = bool
+  default     = true
+}
+
+variable "time_zone" {
+  description = "Instance timezone."
   type        = string
-  default     = "2.9.3"
+  default     = "Asia/Kolkata"
+}
+
+variable "tags" {
+  description = "Additional tags for all resources."
+  type        = map(string)
+  default     = {}
 }
