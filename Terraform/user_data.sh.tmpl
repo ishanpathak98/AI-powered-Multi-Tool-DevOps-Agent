@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+# Set timezone
+timedatectl set-timezone ${time_zone}
+
+# Base tools
+apt-get update -y
+apt-get upgrade -y
+apt-get install -y git curl unzip jq python3-venv python3-pip
+
+# Prepare directories
+mkdir -p /opt/opsbot/logs /opt/opsbot/tmp
+
+# Non-root user for later phases
+if ! id -u ops >/dev/null 2>&1; then
+  adduser --disabled-password --gecos "" ops
+fi
+usermod -aG sudo ops
+mkdir -p /home/ops/.ssh
+if [ -f /home/ubuntu/.ssh/authorized_keys ]; then
+  cp -a /home/ubuntu/.ssh/authorized_keys /home/ops/.ssh/authorized_keys || true
+  chown -R ops:ops /home/ops/.ssh
+  chmod 700 /home/ops/.ssh
+  chmod 600 /home/ops/.ssh/authorized_keys || true
+fi
+
+# Document defaults for next phases (keep private; use SSH tunnel)
+cat >/opt/opsbot/PORTS_PLAN.txt <<'EOT'
+Project: ${project} (${slug})
+Prometheus: 9090
+Node Exporter: 9100
+(Keep private; use SSH tunnels for UI access.)
+EOT
+
+# Phase 1 checklist
+cat >/opt/opsbot/PHASE1_CHECKLIST.txt <<'EOT'
+[Phase 1 Completed by Terraform bootstrap]
+- Project: ${project} (${slug})
+- Ubuntu 22.04 t2.micro created
+- Security Group restricts SSH (22) to your CIDR
+- Prometheus 9090 / Node Exporter 9100 reserved; not exposed publicly
+- Basics installed: git curl unzip jq python3-venv python3-pip
+- 'ops' user created with sudo; SSH key copied from ubuntu if present
+EOT
